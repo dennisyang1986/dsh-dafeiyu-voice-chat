@@ -1,0 +1,5 @@
+# 大肥鱼语聊：Host 半身提供语音合成 / 语音识别 / 对话的本地转发，
+# Client 半身渲染浮层界面（见 package.json 的 dsh.client）。
+- insert:
+    - id: dafeiyu-voice-chat
+      name: 'dsh-dafeiyu-voice-chat'

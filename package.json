@@ -1,0 +1,58 @@
+{
+  "name": "dsh-dafeiyu-voice-chat",
+  "version": "1.0.0",
+  "description": "Dafeiyu voice chat for DeepSeek Harness: DeepSeek speech recognition, speech synthesis and image understanding behind a draggable floating panel.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dennisyang1986/dsh-dafeiyu-voice-chat.git"
+  },
+  "homepage": "https://github.com/dennisyang1986/dsh-dafeiyu-voice-chat#readme",
+  "bugs": {
+    "url": "https://github.com/dennisyang1986/dsh-dafeiyu-voice-chat/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek",
+    "deepseek-harness",
+    "voice",
+    "speech",
+    "tts",
+    "asr"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "icon": "icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./assets/*": "./assets/*"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "assets/*",
+    "icon.svg"
+  ],
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}
