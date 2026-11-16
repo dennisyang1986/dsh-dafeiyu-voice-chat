@@ -397,10 +397,16 @@ async function handleKey(ctx, req, res) {
   sendJson(res, 200, { ok: true, masked: maskKey(key) })
 }
 
-/** Wrap one handler so a thrown `HttpError` becomes a JSON reply. */
-function route(handler) {
+/** Wrap one handler with the connection admission check and JSON error replies. */
+function route(ctx, handler) {
   return async (req, res) => {
     try {
+      const rejection = ctx.connection.requestRejection(req)
+      if (rejection !== undefined) {
+        res.statusCode = rejection
+        res.end()
+        return
+      }
       await handler(req, res)
     } catch (error) {
       if (res.writableEnded) return
@@ -416,7 +422,7 @@ function route(handler) {
 }
 
 export const name = 'dafeiyu-voice-chat'
-export const inject = ['webServer']
+export const inject = ['webServer', 'connection']
 
 export function apply(ctx, config) {
   const enabled = config?.enabled !== false
@@ -426,7 +432,7 @@ export function apply(ctx, config) {
       ctx.webServer.register({
         kind: 'exact',
         path: '/dafeiyu/tts',
-        handler: route((req, res) => handleTts(ctx, req, res)),
+        handler: route(ctx, (req, res) => handleTts(ctx, req, res)),
       }),
     'dafeiyu: tts route',
   )
@@ -435,7 +441,7 @@ export function apply(ctx, config) {
       ctx.webServer.register({
         kind: 'exact',
         path: '/dafeiyu/asr',
-        handler: route((req, res) => handleAsr(ctx, req, res)),
+        handler: route(ctx, (req, res) => handleAsr(ctx, req, res)),
       }),
     'dafeiyu: asr route',
   )
@@ -444,7 +450,7 @@ export function apply(ctx, config) {
       ctx.webServer.register({
         kind: 'exact',
         path: '/dafeiyu/chat',
-        handler: route((req, res) => handleChat(ctx, req, res)),
+        handler: route(ctx, (req, res) => handleChat(ctx, req, res)),
       }),
     'dafeiyu: chat route',
   )
@@ -453,7 +459,7 @@ export function apply(ctx, config) {
       ctx.webServer.register({
         kind: 'exact',
         path: '/dafeiyu/status',
-        handler: route((req, res) => handleStatus(ctx, req, res)),
+        handler: route(ctx, (req, res) => handleStatus(ctx, req, res)),
       }),
     'dafeiyu: status route',
   )
@@ -462,7 +468,7 @@ export function apply(ctx, config) {
       ctx.webServer.register({
         kind: 'exact',
         path: '/dafeiyu/key',
-        handler: route((req, res) => handleKey(ctx, req, res)),
+        handler: route(ctx, (req, res) => handleKey(ctx, req, res)),
       }),
     'dafeiyu: key route',
   )

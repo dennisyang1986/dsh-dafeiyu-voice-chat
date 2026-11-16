@@ -1,6 +1,6 @@
 {
   "name": "dsh-dafeiyu-voice-chat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dafeiyu voice chat for DeepSeek Harness: DeepSeek speech recognition, speech synthesis and image understanding behind a draggable floating panel.",
   "type": "module",
   "license": "MIT",

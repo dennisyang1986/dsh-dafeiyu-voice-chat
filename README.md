@@ -50,6 +50,7 @@
 - **录音格式**：Web Audio 采集 PCM，前端重采样为 16 kHz 16-bit 单声道 WAV，符合 ASR 的格式要求。
 - **低延迟朗读**：把流式回答按句切分（中文标点/换行），每句立即请求合成，播放队列边下边播。
 - **动效取真实音量**：播放侧与麦克风侧各接一个 `AnalyserNode`，用 RMS 驱动圆形图标的缩放与光晕。
+- **路由准入**：五个 `/dafeiyu/*` 路由都先调用 `ctx.connection.requestRejection`，和 Harness 自带插件用的是同一道 Host/Origin + 已认证页面会话检查，避免任意网页跨站调用本机接口。
 - **图片**：发送前在浏览器里压到最长边 1024px 的 JPEG，再以 base64 交给视觉模型。
 
 ## 前置条件：一个 DeepSeek API Key
@@ -123,5 +124,6 @@ dsh plugin --profile web add link:/path/to/dsh-dafeiyu-voice-chat
 
 ## 说明
 
-- 三个接口只监听本机回环地址（`127.0.0.1`），与 Harness 其它插件路由一致，没有额外的鉴权头。
+- 所有 `/dafeiyu/*` 路由在入口先过 `ctx.connection.requestRejection(req)`：Host/Origin 不匹配返回 403，没有已认证的页面会话返回 401。只有从 DSH 页面里发出的请求能打到这几个接口，浏览器里打开的其它网页会被挡掉。
+- 路由只监听本机回环地址（`127.0.0.1`），DeepSeek 的 Key 始终留在 Host 侧。
 - 语音合成按字符计费，语音识别按音频时长计费，请留意用量。
